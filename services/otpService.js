@@ -1,12 +1,10 @@
 const twilio = require("twilio");
 const Driver = require("../models/Driver");
-const {
-  TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN,
-  TWILIO_PHONE_NUMBER,
-} = require("../utils/constants");
-
-const client = new twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+require("dotenv").config();
+const client = new twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
 exports.sendOtp = async (phone, android_device_token) => {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -22,7 +20,7 @@ exports.sendOtp = async (phone, android_device_token) => {
       );
       await client.messages.create({
         body: `Your Seda verification code is ${otp}`,
-        from: TWILIO_PHONE_NUMBER,
+        from: process.env.TWILIO_PHONE_NUMBER,
         to: phone,
       });
       return otp;
@@ -30,7 +28,7 @@ exports.sendOtp = async (phone, android_device_token) => {
       // Inactive
       await client.messages.create({
         body: `Your account is currently on hold. Please contact support.`,
-        from: TWILIO_PHONE_NUMBER,
+        from: process.env.TWILIO_PHONE_NUMBER,
         to: phone,
       });
       return "Account is on hold";
@@ -42,7 +40,7 @@ exports.sendOtp = async (phone, android_device_token) => {
     await Driver.create({ phone, android_device_token, otp, admin_status: 0 }); // Assuming new drivers are active by default
     await client.messages.create({
       body: `Your Seda verification code is ${otp}`,
-      from: TWILIO_PHONE_NUMBER,
+      from: process.env.TWILIO_PHONE_NUMBER,
       to: phone,
     });
     return otp;
