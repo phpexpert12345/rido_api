@@ -9,8 +9,17 @@ app.use(bodyParser.json());
 
 connectDB();
 
+app.use(bodyParser.json());
+
 app.use("/api", driverRoutes);
 app.use("/api", masterRoutes); // Use master routes
+
+app.use(express.static("public"));
+
+// Serve the main HTML file
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
